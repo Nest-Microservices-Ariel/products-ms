@@ -24,3 +24,6 @@ https://docs.nestjs.com/recipes/prisma
 
 ## Convert to microservice
 https://docs.nestjs.com/microservices/basics
+
+## Manejo de excepciones
+https://docs.nestjs.com/microservices/exception-filters

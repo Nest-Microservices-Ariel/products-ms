@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
 import { envs } from './config';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { MicroserviceOptions, RpcException, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const logger = new Logger('Main');
@@ -18,8 +18,16 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
-    forbidNonWhitelisted: true
-  }))
+    forbidNonWhitelisted: true,
+    // esta factory es para capturar los errores del ValidationPipe que rompen por ser microservicio
+    // una alternativa es capturar los HttpException con un filter como en el gateway
+    exceptionFactory: ( error ) => {
+      return new RpcException({
+        status: HttpStatus.BAD_REQUEST,
+        message: error
+      })
+    }
+  }));
 
   await app.listen();
   logger.log(`Products microservice running on port ${ envs.port }`);
