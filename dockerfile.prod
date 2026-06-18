@@ -22,6 +22,8 @@ COPY --from=build /usr/src/app/dist ./dist
 COPY --from=build /usr/src/app/generated ./generated
 COPY --from=build /usr/src/app/prisma/dev.db ./prisma/dev.db
 ENV NODE_ENV=production
+#damos acceso escritura al user node para la base de datos
+RUN chown -R node:node /usr/src/app/prisma
 USER node
 EXPOSE 3000
 CMD [ "node", "dist/src/main.js" ]
